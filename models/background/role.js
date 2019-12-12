@@ -3,7 +3,7 @@ const crypto = require('crypto')
 
 // 统计用户总数
 const userCount = async(username) => {
-  const sql =  `select count(*) as count from user where (username = '${username}' or '${username}' = '')`
+  const sql =  `select count(*) as count from user where username like '%${username}%'`
   const result = await mysql.query(sql)
   return result
 }
@@ -12,7 +12,7 @@ const userCount = async(username) => {
 const userSearch = async (payload) => {
   const {page, size, username } = payload
   const start = page * size
-  const sql = `select username, email, phone from user where (username = '${username}' or '${username}' = '') limit ${start}, ${size}`
+  const sql = `select username, email, phone from user where username like '%${username}%' limit ${start}, ${size}`
   // if (username !== '' ) {
   //   sql = `select username, email, phone from user where username = '${username}' limit ${start}, ${size}`
   // } else {
@@ -61,7 +61,7 @@ const adminCount = async(username) => {
   if (username === '') {
     sql =  `select count(*) as count from admin`
   } else {
-    sql =  `select count(*) as count from admin where username = '${username}'`
+    sql =  `select count(*) as count from admin where username like '%${username}%'`
   }
   const result = await mysql.query(sql)
   return result
@@ -72,7 +72,7 @@ const adminSearch = async (payload) => {
   const start = page * size
   let sql
   if (username !== '' ) {
-    sql = `select id, username, email, phone from admin where username = '${username}' limit ${start}, ${size}`
+    sql = `select id, username, email, phone from admin where username like '%${username}%' limit ${start}, ${size}`
   } else {
     sql = `select id, username, email, phone from admin limit ${start}, ${size}`
   }

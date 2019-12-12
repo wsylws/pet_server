@@ -2,7 +2,7 @@ const mysql = require('../../config/connect')
 
 // 统计论坛总数
 const showCount = async(username, content) => {
-  const sql =  `select count(*) as count from petshow where (username = '${username}' or '${username}' = '') and (content = '${content}' or '${content}' = '')`
+  const sql =  `select count(*) as count from petshow where username like '%${username}%' and content like '%${content}%'`
   const result = await mysql.query(sql)
   return result
 }
@@ -10,7 +10,7 @@ const showCount = async(username, content) => {
 const showSearch = async (payload) => {
   const {page, size, username, content } = payload
   const start = page * size
-  const sql = `select * from petshow where (username = '${username}' or '${username}' = '') and (content = '${content}' or '${content}' = '') limit ${start}, ${size}`
+  const sql = `select * from petshow where username like '%${username}%' and content like '%${content}%' limit ${start}, ${size}`
   try {
       const data = await mysql.query(sql)
       const total = await showCount(username, content)

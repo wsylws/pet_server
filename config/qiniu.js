@@ -12,7 +12,7 @@ const secretKey = '4O8kp8f8rFYw66bGHgDIx2T23V9hg4Lm6_B9met4'
 const mac = new qiniu.auth.digest.Mac(accessKey, secretKey)
 const options = {
   scope: 'petadopt-wsy',
-  expires: 10800
+  expires: 9600
 }
 const putPolicy = new qiniu.rs.PutPolicy(options)
 const uploadToken = putPolicy.uploadToken(mac)

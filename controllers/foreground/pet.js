@@ -107,6 +107,16 @@ async function petGetLike(id) {
     return showErrorModal(types.global.RETRIEVE_LIST_FAIL, "获取喜欢失败", null)
   }
 }
+
+async function petSwiper() {
+  try {
+    const result = await petModel.getPetSwiper()
+    return showErrorModal(types.global.RETRIEVE_LIST_SUCCESS, "获取轮播图成功", result)
+  } catch {
+    return showErrorModal(types.global.RETRIEVE_LIST_FAIL, "获取轮播图失败", null)
+  }
+}
+
 module.exports = {
   petSend,
   petBreed,
@@ -117,5 +127,6 @@ module.exports = {
   petAddReadNum,
   petLikeNum,
   petGetLike,
-  petUnLikeNum
+  petUnLikeNum,
+  petSwiper
 }

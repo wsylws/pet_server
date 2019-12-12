@@ -118,4 +118,15 @@ router.get('/getlike/:id', (req, res) => {
     throw new Error(err)
   }
 })
+
+// 获取轮播图
+router.get('/getswiper', (req, res) => {
+  try {
+    petController.petSwiper().then(result => {
+      res.json(result)
+    })
+  } catch(err) {
+    throw new Error(err)
+  }
+})
 module.exports = router

@@ -16,11 +16,12 @@ var now = moment();
 const sendPets = async payload => {
   const { title, petdesc, breed, sex, free, age, money, quchong, mianyi, jueyu, contactname, telephone, wechat, qqnumber, imageUrl, province, city, county, username, avatar} = payload
   const createTime = moment().format("YYYY-MM-DD HH:mm:ss")
-  const readNum = 0, commentNum = 0, likeNum = 0, collectNum = 0
+  const readNum = 0
   const status = 0
+  const send_check = 0
   console.log(createTime)
-  const sql =  `insert into pet(title, pet_desc, status, breed, sex, free, age, money, quchong, mianyi, jueyu, contactname, telephone, wechat, qqnumber, imgurl, username, read_num, comment_num, like_num, collect_num, create_time, province, city, county ) 
-                values ('${title}', '${petdesc}', '${status}', '${breed}', ${sex}, ${free}, ${age}, ${money}, '${quchong}', '${mianyi}', '${jueyu}', '${contactname}', '${telephone}', '${wechat}', '${qqnumber}', '${imageUrl}', '${username}', ${readNum}, ${commentNum}, ${likeNum}, ${collectNum}, '${createTime}', '${province}', '${city}', '${county}' )`
+  const sql =  `insert into pet(title, pet_desc, status, breed, sex, free, age, money, quchong, mianyi, jueyu, contactname, telephone, wechat, qqnumber, imgurl, username, read_num, create_time, province, city, county, send_check ) 
+                values ('${title}', '${petdesc}', '${status}', '${breed}', ${sex}, ${free}, '${age}', ${money}, '${quchong}', '${mianyi}', '${jueyu}', '${contactname}', '${telephone}', '${wechat}', '${qqnumber}', '${imageUrl}', '${username}', ${readNum}, '${createTime}', '${province}', '${city}', '${county}', '${send_check}' )`
   try {
     const result = await mysql.query(sql)
     return result
@@ -33,6 +34,7 @@ const petCount = async(province, city, county, breed) => {
   let sql
   sql = `select count(*) as count from pet,user 
          where pet.username=user.username 
+         and send_check = 1
          and (breed = '${breed}' or '${breed}' = '' or '${breed}' = '全部') 
          and (province = '${province}' or '${province}' = '' or '${province}' = '全部') 
          and (city = '${city}' or '${city}' = '' or '${city}' = '全部') 
@@ -60,26 +62,12 @@ const petArticle = async payload => {
   let sql
   sql = `select id, title, pet_desc, create_time, read_num, pet.username, avatar, imgurl from pet,user 
          where pet.username=user.username 
+         and send_check = 1
          and (breed = '${breed}' or '${breed}' = '' or '${breed}' = '全部') 
          and (province = '${province}' or '${province}' = '' or '${province}' = '全部') 
          and (city = '${city}' or '${city}' = '' or '${city}' = '全部') 
          and (county = '${county}' or '${county}' = '' or '${county}' = '全部') 
          order by create_time desc limit ${start}, ${pageSize}`
-  // if ((province === '' || province === "全部") && (breed === '' || breed === "全部") ) {
-  //   sql = `select id, title, pet_desc, create_time, read_num, pet.username, avatar, imgurl from pet,user where pet.username=user.username order by create_time desc limit ${start}, ${pageSize}`
-  // } else if ((province === '' || province === "全部") && (breed !== '' || breed !== "全部")) {
-  //   sql = `select id, title, pet_desc, create_time, read_num, pet.username, avatar, imgurl from pet,user where pet.username=user.username and breed='${breed}' order by create_time desc limit ${start}, ${pageSize}`
-  // } else if (city === "全部" && (breed === '' || breed === "全部")) {
-  //   sql = `select id, title, pet_desc, create_time, read_num, pet.username, avatar, imgurl from pet,user where pet.username=user.username and province='${province}' order by create_time desc limit ${start}, ${pageSize}`
-  // } else if (city === "全部" && (breed !== '' && breed !== "全部")) {
-  //   sql = `select id, title, pet_desc, create_time, read_num, pet.username, avatar, imgurl from pet,user where pet.username=user.username and province='${province}' and breed='${breed}' order by create_time desc limit ${start}, ${pageSize}`
-  // } else if (county === "全部" && (breed === '' || breed === "全部")) {
-  //   sql = `select id, title, pet_desc, create_time, read_num, pet.username, avatar, imgurl from pet,user where pet.username=user.username and province='${province}' and city='${city}' order by create_time desc limit ${start}, ${pageSize}`
-  // } else if (province !== '' && (breed === '' || breed === "全部")){
-  //   sql = `select id, title, pet_desc, create_time, read_num, pet.username, avatar, imgurl from pet,user where pet.username=user.username and province='${province}' and city='${city}' and county='${county}' order by create_time desc limit ${start}, ${pageSize}`
-  // }  else {
-  //   sql = `select id, title, pet_desc, create_time, read_num, pet.username, avatar, imgurl from pet,user where pet.username=user.username and province='${province}' and city='${city}' and county='${county}' and breed='${breed}' order by create_time desc limit ${start}, ${pageSize}`
-  // }
   const pageTotal = await petCount(province, city, county, breed)
   const result = await mysql.query(sql)
   return {result, pageTotal}
@@ -158,6 +146,12 @@ const getPetLike = async id => {
   const result = await mysql.query(sql)
   return result
 }
+
+const getPetSwiper = async () => {
+  const sql = `select imgUrl from carousel limit 0, 4`
+  const result = await mysql.query(sql)
+  return result
+}
 module.exports = {
   sendPets,
   petBreed,
@@ -168,5 +162,6 @@ module.exports = {
   addReadNum,
   addPetLikeNum,
   getPetLike,
-  addPetUnLikeNum
+  addPetUnLikeNum,
+  getPetSwiper
 }

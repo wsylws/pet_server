@@ -2,7 +2,7 @@ const mysql = require('../../config/connect')
 
 // 统计宠物送养总数
 const petCount = async(username, title, status) => {
-  const sql =  `select count(*) as count from pet where (username = '${username}' or '${username}' = '') and (title = '${title}' or '${title}' = '') and (status = '${status}' or '${status}' = '')`
+  const sql =  `select count(*) as count from pet where username like '%${username}%' and title like '%${title}%' and (status = '${status}' or '${status}' = '')`
   const result = await mysql.query(sql)
   return result
 }
@@ -10,7 +10,7 @@ const petCount = async(username, title, status) => {
 const adoptSearch = async (payload) => {
   const {page, size, username, title, status } = payload
   const start = page * size
-  const sql = `select * from pet where (username = '${username}' or '${username}' = '') and (title = '${title}' or '${title}' = '') and (status = '${status}' or '${status}' = '') limit ${start}, ${size}`
+  const sql = `select * from pet where username like '%${username}%' and title like '%${title}%' and (status = '${status}' or '${status}' = '') order by create_time desc limit ${start}, ${size} `
   try {
       const data = await mysql.query(sql)
       const total = await petCount(username, title, status)
@@ -23,7 +23,7 @@ const adoptSearch = async (payload) => {
 
 const getAdoptById = async (payload) => {
   const { id } = payload
-  sql = `select id, title, status from pet where id=${id}`
+  sql = `select id, title, status, send_check from pet where id=${id}`
   try {
       const data = await mysql.query(sql)
       return data
@@ -33,8 +33,8 @@ const getAdoptById = async (payload) => {
 }
 
 const adoptUpdate = async (payload) => {
-  const {id, title, status} =  payload
-  const sql = `update pet set title='${title}',status='${status}' where id='${id}'`
+  const {id, title, status,send_check} =  payload
+  const sql = `update pet set title='${title}',status='${status}',send_check='${send_check}' where id='${id}'`
   try {
       const data = await mysql.query(sql)
       return data
@@ -211,6 +211,7 @@ const likeDelete = async (payload) => {
       return null
   }
 }
+
 module.exports = {
   adoptSearch,
   getAdoptById,

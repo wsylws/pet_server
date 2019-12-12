@@ -12,8 +12,6 @@ module.exports = function(app) {
   // 分发user模块，比如用户的注册和登录请求业务逻辑将会在/api/user.js中实现
   var user = require('./foreground/user')
   app.use(`${foregroundURL}/user`,user);
-  var upload = require('./foreground/upload')
-  app.use('/',upload);
   var pet = require('./foreground/pet')
   app.use(`${foregroundURL}/pet`,pet);
   var show = require('./foreground/show')
@@ -36,4 +34,9 @@ module.exports = function(app) {
   app.use(`${backendURL}/bbs`,bbs);
   var show = require('./background/show')
   app.use(`${backendURL}/show`,show);
+  var carousel = require('./background/carousel')
+  app.use(`${backendURL}/carousel`,carousel);
+
+  var upload = require('./foreground/upload')
+  app.use('/',upload);
 }

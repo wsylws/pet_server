@@ -2,7 +2,7 @@ const mysql = require('../../config/connect')
 
 // 统计论坛总数
 const bbsCount = async(username, title, top, category) => {
-  const sql =  `select count(*) as count from bbs where (username = '${username}' or '${username}' = '') and (title = '${title}' or '${title}' = '') and (top = '${top}' or '${top}' = '') and (category = '${category}' or '${category}' = '')`
+  const sql =  `select * from bbs where (top = '${top}' or '${top}' = '') and (category = '${category}' or '${category}' = '') and title like '%${title}%'  and username like '%${username}%'`
   const result = await mysql.query(sql)
   return result
 }
@@ -10,7 +10,7 @@ const bbsCount = async(username, title, top, category) => {
 const bbsSearch = async (payload) => {
   const {page, size, username, title, top, category } = payload
   const start = page * size
-  const sql = `select * from bbs where (username = '${username}' or '${username}' = '') and (title = '${title}' or '${title}' = '') and (top = '${top}' or '${top}' = '') and (category = '${category}' or '${category}' = '') limit ${start}, ${size}`
+  const sql = `select * from bbs where (top = '${top}' or '${top}' = '') and (category = '${category}' or '${category}' = '') and title like '%${title}%'  and username like '%${username}%' order by create_time desc limit ${start}, ${size}`
   try {
       const data = await mysql.query(sql)
       const total = await bbsCount(username, title, top, category)
