@@ -1,24 +1,30 @@
-//nodemailer.js
-const nodemailer = require('nodemailer');
- 
-//创建一个smtp服务器
-const config = {
-    host: 'smtp.qq.com',
+const nodemailer = require("nodemailer");
+
+let obj = {
+  transporter: nodemailer.createTransport({
+    service: "qq", // 运营商  qq邮箱 网易//
     port: 465,
+    secure: true,
     auth: {
-        user: '847805109@qq.com', //注册的163邮箱账号
-        pass: 'fcgirlbwpamvbfce' //邮箱的授权码，不是注册时的密码,等你开启的stmp服务自然就会知道了
+      user: "847805109@qq.com", //发送方的邮箱
+      pass: "fcgirlbwpamvbfce" // pop3 授权码
     }
-};
-// 创建一个SMTP客户端对象
-const transporter = nodemailer.createTransport(config);
- 
-//发送邮件
-module.exports = function (mail){
-    transporter.sendMail(mail, function(error, info){
-        if(error) {
-            return console.log(error);
-        }
-        console.log('mail sent:', info.response);
+  }),
+  send: function(mail, content,callback) {
+    mailOptions = {
+      from: '"Hello World~" <847805109@qq.com>',
+      to: mail,
+      subject: content,
+      text: content,
+      html: "<h1>" + content + "</h1>"
+    };
+    this.transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return console.log(error);
+      }
+      console.log("Message sent: %s", info.messageId);
+      callback();
     });
+  }
 };
+module.exports = obj;

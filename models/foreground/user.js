@@ -6,6 +6,7 @@
  */
 const crypto = require('crypto');
 const mysql = require('../../config/connect')
+const sendMail = require('../../utils/nodemailer'); //传入邮件发送的模块对象
 
 /**
  * @desc 注册
@@ -39,6 +40,19 @@ const registerUser = async payload => {
     }
 }
 
+// 发送验证码
+const sendCode = async (email, count) => {
+    count = ""; //初始化验证码容器
+    for (let i = 0; i < 4; i++) {
+        count += Math.floor(Math.random() * 10); //生成4个随机数
+    }
+    var callback = () => {
+        console.log("发送成功");
+    };
+    sendMail.send(email, count, callback); //调用邮件发送模块
+    return count
+}
+
 /**
  * @desc: 判断是否存在该用户名
  * @param {String} username
@@ -66,5 +80,6 @@ const loginUser = async (username) => {
 module.exports = {
     registerUser,
     hasUsername,
-    loginUser
+    loginUser,
+    sendCode
 }

@@ -8,12 +8,13 @@ const crypto = require('crypto');
 const types = require('../../utils/error.code');
 const userModel = require('../../models/foreground/user')
 const showErrorModal = require('../../utils').showErrorModal
+var count = "" //新建一个空字符存放验证码，可供全局调用
 
 async function creactRegister(payload) {
-  const { username } = payload
+  const { username, emailCode } = payload
   const isHasThisUsername = await userModel.hasUsername(username)
   console.log(isHasThisUsername)
-  if (isHasThisUsername.length === 0) {
+  if (isHasThisUsername.length === 0 && emailCode === count) {
     try {
       const result = await userModel.registerUser(payload)
       
@@ -21,8 +22,22 @@ async function creactRegister(payload) {
     } catch (err) {
       showErrorModal(types.user.REGISTER_FAIL, '注册失败', null)
     } 
-  } else {
+  } else if (isHasThisUsername.length !== 0){
     return showErrorModal(types.user.REGISTER_FAIL, '该用户已存在', null)
+  } else {
+    return showErrorModal(types.user.REGISTER_FAIL, '验证码错误', null)
+  }
+}
+
+async function sendCode(payload) {
+  try {
+    const { email } = payload
+    const result = await userModel.sendCode(email, count)
+    count = result
+    return showErrorModal(types.user.SEND_SUCCESS, "发送成功" , null)
+  } catch(e) {
+    console.log(e)
+    return showErrorModal(types.user.SEND_FAIL, "发送失败" , null)
   }
 }
 
@@ -52,5 +67,6 @@ async function userLogin(payload) {
 
 module.exports = {
   creactRegister,
-  userLogin
+  userLogin,
+  sendCode
 }

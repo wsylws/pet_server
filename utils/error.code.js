@@ -36,7 +36,9 @@ module.exports = {
     CHECK_SUCCESS: 1,
     CHECK_FAIL: -1,
     RESET_SUCCESS: 1,
-    RESET_FAIL: -1
+    RESET_FAIL: -1,
+    SEND_SUCCESS: 1,
+    SEND_FAIL: -1
   },
   pet: {
     COMMENT_SUCCESS: 1,
