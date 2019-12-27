@@ -28,6 +28,16 @@ async function petBreed() {
   }
 }
 
+async function findBreed(payload) {
+  try {
+    const result = await petModel.findBreed(payload)
+    return showErrorModal(types.global.RETRIEVE_LIST_SUCCESS, "找到宠物品种成功", result)
+  } catch(e) {
+    console.log(e)
+    return showErrorModal(types.global.RETRIEVE_LIST_FAIL, "找到宠物品种失败", null)
+  }
+}
+
 //获取宠物领养文章数据
 async function petAdoptArticle(payload) {
   try {
@@ -120,6 +130,7 @@ async function petSwiper() {
 module.exports = {
   petSend,
   petBreed,
+  findBreed,
   petAdoptArticle,
   petDetailArticle,
   petSendComment,
@@ -128,5 +139,5 @@ module.exports = {
   petLikeNum,
   petGetLike,
   petUnLikeNum,
-  petSwiper
+  petSwiper,
 }

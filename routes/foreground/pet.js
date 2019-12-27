@@ -29,6 +29,18 @@ router.get('/petbreed', (req, res) => {
   }
 })
 
+router.get('/findbreed', (req, res) => {
+  try {
+    var result = req.query;
+    petController.findBreed(result).then(result => {
+      res.json(result)
+    })
+  } catch (err) {
+    throw new Error(err)
+  }
+})
+
+
 router.get('/petarticle', (req, res) => {
   try {
     var result = req.query;

@@ -14,14 +14,22 @@ var now = moment();
  */
 
 const sendPets = async payload => {
-  const { title, petdesc, breed, sex, free, age, money, quchong, mianyi, jueyu, contactname, telephone, wechat, qqnumber, imageUrl, province, city, county, username, avatar} = payload
+  const { title, petdesc, breed, breed_name, sex, age, quchong, mianyi, jueyu, contactname, telephone, wechat, qqnumber, imageUrl, province, city, county, username, avatar} = payload
   const createTime = moment().format("YYYY-MM-DD HH:mm:ss")
   const readNum = 0
   const status = 0
   const send_check = 0
   console.log(createTime)
-  const sql =  `insert into pet(title, pet_desc, status, breed, sex, free, age, money, quchong, mianyi, jueyu, contactname, telephone, wechat, qqnumber, imgurl, username, read_num, create_time, province, city, county, send_check ) 
-                values ('${title}', '${petdesc}', '${status}', '${breed}', ${sex}, ${free}, '${age}', ${money}, '${quchong}', '${mianyi}', '${jueyu}', '${contactname}', '${telephone}', '${wechat}', '${qqnumber}', '${imageUrl}', '${username}', ${readNum}, '${createTime}', '${province}', '${city}', '${county}', '${send_check}' )`
+  let sql
+  console.log(1111111111, breed_name);
+  if(breed_name) {
+    sql =  `insert into pet(title, pet_desc, status, breed, breed_name, sex, age, quchong, mianyi, jueyu, contactname, telephone, wechat, qqnumber, imgurl, username, read_num, create_time, province, city, county, send_check ) 
+                values ('${title}', '${petdesc}', '${status}', '${breed}', '${breed_name}', ${sex}, '${age}', '${quchong}', '${mianyi}', '${jueyu}', '${contactname}', '${telephone}', '${wechat}', '${qqnumber}', '${imageUrl}', '${username}', ${readNum}, '${createTime}', '${province}', '${city}', '${county}', '${send_check}' )`
+  } else {
+    sql =  `insert into pet(title, pet_desc, status, breed, sex, age, quchong, mianyi, jueyu, contactname, telephone, wechat, qqnumber, imgurl, username, read_num, create_time, province, city, county, send_check ) 
+                values ('${title}', '${petdesc}', '${status}', '${breed}', ${sex}, '${age}', '${quchong}', '${mianyi}', '${jueyu}', '${contactname}', '${telephone}', '${wechat}', '${qqnumber}', '${imageUrl}', '${username}', ${readNum}, '${createTime}', '${province}', '${city}', '${county}', '${send_check}' )`
+  }
+  
   try {
     const result = await mysql.query(sql)
     return result
@@ -35,6 +43,7 @@ const petCount = async(province, city, county, breed) => {
   sql = `select count(*) as count from pet,user 
          where pet.username=user.username 
          and send_check = 1
+         and status = '0'
          and (breed = '${breed}' or '${breed}' = '' or '${breed}' = '全部') 
          and (province = '${province}' or '${province}' = '' or '${province}' = '全部') 
          and (city = '${city}' or '${city}' = '' or '${city}' = '全部') 
@@ -48,26 +57,50 @@ const petCount = async(province, city, county, breed) => {
  * @desc: 获取宠物品种
  */
 const petBreed = async () => {
-  const sql = `select breed_name from pet_breed`
+  const sql = `select breed_name from pet_breed where category is Null`
   const result = await mysql.query(sql)
   return result
 }
+
+const findBreed = async (payload) => {
+  const { category } = payload
+  console.log('-----------', category)
+  const sql = `select breed_name from pet_breed where category = '${category}'`
+  const result = await mysql.query(sql)
+  return result
+}
+
 
 /**
  * @desc: 获取宠物文章信息，分页，搜索
  */
 const petArticle = async payload => {
-  const { pageNum, pageSize, province, city, county, breed } = payload
+  const { pageNum, pageSize, province, city, county, breed, breedName } = payload
   const start = (pageNum-1) * pageSize
   let sql
-  sql = `select id, title, pet_desc, create_time, read_num, pet.username, avatar, imgurl from pet,user 
+  if ( breedName !== '' ) {
+    sql = `select id, title, pet_desc, create_time, read_num, pet.username, avatar, imgurl from pet,user 
          where pet.username=user.username 
          and send_check = 1
+         and status = '0'
+         and (breed = '${breed}') 
+         and (breed_name = '${breedName}' or '${breedName}' = '') 
+         and (province = '${province}' or '${province}' = '' or '${province}' = '全部') 
+         and (city = '${city}' or '${city}' = '' or '${city}' = '全部') 
+         and (county = '${county}' or '${county}' = '' or '${county}' = '全部') 
+         order by create_time desc limit ${start}, ${pageSize}`
+  } else {
+    sql = `select id, title, pet_desc, create_time, read_num, pet.username, avatar, imgurl from pet,user 
+         where pet.username=user.username 
+         and send_check = 1
+         and status = '0'
          and (breed = '${breed}' or '${breed}' = '' or '${breed}' = '全部') 
          and (province = '${province}' or '${province}' = '' or '${province}' = '全部') 
          and (city = '${city}' or '${city}' = '' or '${city}' = '全部') 
          and (county = '${county}' or '${county}' = '' or '${county}' = '全部') 
          order by create_time desc limit ${start}, ${pageSize}`
+  }
+  
   const pageTotal = await petCount(province, city, county, breed)
   const result = await mysql.query(sql)
   return {result, pageTotal}
@@ -155,6 +188,7 @@ const getPetSwiper = async () => {
 module.exports = {
   sendPets,
   petBreed,
+  findBreed,
   petArticle,
   petDetail,
   sendpetComment,
@@ -163,5 +197,6 @@ module.exports = {
   addPetLikeNum,
   getPetLike,
   addPetUnLikeNum,
-  getPetSwiper
+  getPetSwiper,
+  
 }

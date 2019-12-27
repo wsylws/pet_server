@@ -40,6 +40,36 @@ const registerUser = async payload => {
     }
 }
 
+const userIsExist = async (payload) => {
+    const {username} =  payload
+    sql = `select count(*) as count from user where username='${username}'`
+    try {
+        const data = await mysql.query(sql)
+        if(data[0].count !== 0 ) {
+          return true
+        } else {
+          return false
+        }
+    } catch (err) {
+        return null
+    }
+  }
+
+  const emailIExist = async (payload) => {
+    const {email} =  payload
+    sql = `select count(*) as count from user where email='${email}'`
+    try {
+        const data = await mysql.query(sql)
+        if(data[0].count !== 0 ) {
+          return true
+        } else {
+          return false
+        }
+    } catch (err) {
+        return null
+    }
+  }
+
 // 发送验证码
 const sendCode = async (email, count) => {
     count = ""; //初始化验证码容器
@@ -53,14 +83,22 @@ const sendCode = async (email, count) => {
     return count
 }
 
-/**
- * @desc: 判断是否存在该用户名
- * @param {String} username
- */
-const hasUsername = async (username) => {
-    const sql = `select * from user where username = '${username}'`
-    const isHasThisUsername = await mysql.query(sql)
-    return isHasThisUsername
+const updatePassword = async payload => {
+    const { pwd, email} = payload
+    //制定密钥
+    const secret = 'hello world'
+    //用Hmac算法加密密码
+    const hmacPass = crypto.createHmac('sha256', secret)
+      .update(pwd)
+      .digest('hex')
+    // 修改密码
+    const sql =  `update user set pwd = '${hmacPass}' where email = '${email}' `
+    try {
+        const result = await mysql.query(sql)
+        return result
+    } catch (err) {
+        return null
+    }
 }
 
 /**
@@ -79,7 +117,9 @@ const loginUser = async (username) => {
 
 module.exports = {
     registerUser,
-    hasUsername,
     loginUser,
-    sendCode
+    sendCode,
+    userIsExist,
+    emailIExist,
+    updatePassword
 }

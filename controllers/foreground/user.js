@@ -11,21 +11,34 @@ const showErrorModal = require('../../utils').showErrorModal
 var count = "" //新建一个空字符存放验证码，可供全局调用
 
 async function creactRegister(payload) {
-  const { username, emailCode } = payload
-  const isHasThisUsername = await userModel.hasUsername(username)
-  console.log(isHasThisUsername)
-  if (isHasThisUsername.length === 0 && emailCode === count) {
+  const { emailCode } = payload
+  if ( emailCode === count) {
     try {
       const result = await userModel.registerUser(payload)
-      
       return showErrorModal(types.user.REGISTER_SUCCESS, '注册成功', result)
     } catch (err) {
       showErrorModal(types.user.REGISTER_FAIL, '注册失败', null)
     } 
-  } else if (isHasThisUsername.length !== 0){
-    return showErrorModal(types.user.REGISTER_FAIL, '该用户已存在', null)
-  } else {
+  }  else {
     return showErrorModal(types.user.REGISTER_FAIL, '验证码错误', null)
+  }
+}
+
+async function userIsExist(payload) {
+  try {
+    const result = await userModel.userIsExist(payload)
+    return showErrorModal(types.global.RETRIEVE_LIST_SUCCESS, "获取成功" , result)
+  } catch(e) {
+    return showErrorModal(types.global.RETRIEVE_LIST_FAIL, "获取失败" , null)
+  }
+}
+
+async function emailIExist(payload) {
+  try {
+    const result = await userModel.emailIExist(payload)
+    return showErrorModal(types.global.RETRIEVE_LIST_SUCCESS, "获取成功" , result)
+  } catch(e) {
+    return showErrorModal(types.global.RETRIEVE_LIST_FAIL, "获取失败" , null)
   }
 }
 
@@ -38,6 +51,25 @@ async function sendCode(payload) {
   } catch(e) {
     console.log(e)
     return showErrorModal(types.user.SEND_FAIL, "发送失败" , null)
+  }
+}
+
+async function checkCode(payload) {
+  const { emailcode } = payload
+  console.log(emailcode,'------------',count)
+  if ( emailcode === count) {
+      return showErrorModal(types.user.SEND_SUCCESS, '成功', null)
+  }  else{
+    return showErrorModal(types.user.SEND_FAIL, '验证码错误', null)
+  } 
+}
+
+async function updatePassword(payload) {
+  try {
+    const result = await userModel.updatePassword(payload)
+    return showErrorModal(types.global. UPDATE_SUCCESS, "更改成功" , result)
+  } catch(e) {
+    return showErrorModal(types.global. UPDATE_FAIL, "更改失败" , null)
   }
 }
 
@@ -68,5 +100,9 @@ async function userLogin(payload) {
 module.exports = {
   creactRegister,
   userLogin,
-  sendCode
+  sendCode,
+  userIsExist,
+  emailIExist,
+  checkCode,
+  updatePassword
 }

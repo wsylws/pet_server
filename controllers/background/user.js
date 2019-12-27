@@ -5,11 +5,11 @@ const showErrorModal = require('../../utils').showErrorModal
 const showErrorBaken = require('../../utils').showErrorBaken
 
 async function userLogin(payload) {
-  const { username, pwd } = payload
+  const { username, password } = payload
   try {
     const result = await userModel.loginUser(username)
     if (result.length > 0) {
-      if (pwd != result[0].pwd ) {
+      if (password != result[0].password ) {
         return showErrorModal(types.user.LOGIN_FAIL, '用户名或密码不正确', null)
       } else {
         return showErrorModal(types.user.LOGIN_SUCCESS, '登陆成功', ...result)
@@ -23,9 +23,10 @@ async function userLogin(payload) {
 }
 
 async function checkPwd(payload) {
-  const { id, password } = payload
+  const { username, password } = payload
   try {
-    const result = await userModel.checkPwd(id)
+    const result = await userModel.checkPwd(username)
+    console.log(result[0].password, '----------', password);
     if (result[0].password === password) {
       return showErrorBaken(types.user.CHECK_SUCCESSS, "原密码正确" , result, true)
     } else {

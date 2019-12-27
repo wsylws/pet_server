@@ -55,19 +55,19 @@ const adoptDelete = async (payload) => {
   }
 }
 
-const breedCount = async(breed) => {
-  const sql =  `select count(*) as count from pet_breed where (breed_name = '${breed}' or '${breed}' = '')`
+const breedCount = async(breed, category) => {
+  const sql =  `select count(*) as count from pet_breed where (breed_name = '${breed}' or '${breed}' = '') and (category = '${category}' or '${category}' = '')`
   const result = await mysql.query(sql)
   return result
 }
 
 const breedSearch = async (payload) => {
-  const {page, size, breed } = payload
+  const {page, size, breed, category } = payload
   const start = page * size
-  const sql = `select * from pet_breed where (breed_name = '${breed}' or '${breed}' = '') limit ${start}, ${size}`
+  const sql = `select * from pet_breed where (breed_name = '${breed}' or '${breed}' = '') and (category = '${category}' or '${category}' = '') order by category desc limit ${start}, ${size}`
   try {
       const data = await mysql.query(sql)
-      const total = await breedCount(breed)
+      const total = await breedCount(breed, category)
       return { data,total }
   } catch (err) {
       console.log(err)
@@ -77,7 +77,7 @@ const breedSearch = async (payload) => {
 
 const getBreedById = async (payload) => {
   const { id } = payload
-  sql = `select id, breed_name from pet_breed where id=${id}`
+  sql = `select id, breed_name, category from pet_breed where id=${id}`
   try {
       const data = await mysql.query(sql)
       return data
@@ -87,8 +87,8 @@ const getBreedById = async (payload) => {
 }
 
 const breedIsExist = async (payload) => {
-  const {breed_name} =  payload
-  sql = `select count(*) as count from pet_breed where breed_name='${breed_name}'`
+  const {breed_name, category} =  payload
+  sql = `select count(*) as count from pet_breed where breed_name='${breed_name}`
   try {
       const data = await mysql.query(sql)
       if(data[0].count !== 0 ) {
@@ -102,12 +102,12 @@ const breedIsExist = async (payload) => {
 }
 
 const breedUpdate = async (payload) => {
-  const {id,breed_name} =  payload
+  const {id,breed_name, category } =  payload
   let sql;
   if (id === '' ) {
-    sql = `insert into pet_breed(breed_name) values ('${breed_name}')`
+    sql = `insert into pet_breed(breed_name,category) values ('${breed_name}', '${category}')`
   } else {
-    sql = `update pet_breed set breed_name='${breed_name}' where id='${id}'`
+    sql = `update pet_breed set breed_name='${breed_name}', category='${category}' where id='${id}'`
   }
   try {
       const data = await mysql.query(sql)

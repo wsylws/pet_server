@@ -1,5 +1,6 @@
 const mysql = require('../../config/connect')
 const crypto = require('crypto')
+const md5 = require('md5')
 
 // 统计用户总数
 const userCount = async(username) => {
@@ -29,18 +30,14 @@ const userSearch = async (payload) => {
 
 const resetPassword = async (payload) => {
   const { username } = payload
-  //制定密钥
-  const secret = 'hello world'
-  //用Hmac算法加密密码
-  const hmacPass = crypto.createHmac('sha256', secret)
-    .update('123456')
-    .digest('hex')
-  const sql = `update user set pwd = '${hmacPass}' where username='${username}'`
+  const password = md5('123456')
+  const sql = `update user set password = '${password}' where username='${username}'`
   try {
       const data = await mysql.query(sql)
       return data
   } catch (err) {
-      return null
+    console.log(e)
+    return null
   }
 }
 
@@ -113,16 +110,10 @@ const adminIsExist = async (payload) => {
 
 const adminUpdate = async (payload) => {
   const {id,username,email,phone} =  payload
-  let sql;
-  //制定密钥
-  const secret = 'hello world'
-  //用Hmac算法加密密码
-  const hmacPass = crypto.createHmac('sha256', secret)
-    .update('123456')
-    .digest('hex')
+  const password = md5('123456')
   const avatar = 'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png'
-  if (id === '' ) {
-    sql = `insert into admin(username, email ,phone, password, avatar) values ('${username}', '${email}', '${phone}', '${hmacPass}', '${avatar}')`
+  if (id == '' ) {
+    sql = `insert into admin(username, email ,phone, password, avatar) values ('${username}', '${email}', '${phone}', '${password}', '${avatar}')`
   } else {
     sql = `update admin set email='${email}',phone='${phone}' where username='${username}'`
   }
@@ -130,6 +121,7 @@ const adminUpdate = async (payload) => {
       const data = await mysql.query(sql)
       return data
   } catch (err) {
+     console.log(e)
       return null
   }
 }

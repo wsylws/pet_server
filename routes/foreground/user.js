@@ -19,9 +19,50 @@ router.post('/register', (req, res) => {
   }
 })
 
+router.post('/user-exist' , (req, res) => {
+  try {
+    userController.userIsExist(req.body).then(result => {
+      res.json(result)
+    })
+  } catch (err) {
+    throw new Error(err)
+  }
+})
+
+router.post('/email-exist' , (req, res) => {
+  try {
+    userController.emailIExist(req.body).then(result => {
+      res.json(result)
+    })
+  } catch (err) {
+    throw new Error(err)
+  }
+})
+
+
 router.post('/sendcode', (req, res) => {
   try {
     userController.sendCode(req.body).then(result => {
+      res.json(result)
+    })
+  } catch (err) {
+    throw new Error(err)
+  }
+})
+
+router.post('/check-emailcode', (req, res) => {
+  try {
+    userController.checkCode(req.body).then(result => {
+      res.json(result)
+    })
+  } catch (err) {
+    throw new Error(err)
+  }
+})
+
+router.post('/update-password', (req, res) => {
+  try {
+    userController.updatePassword(req.body).then(result => {
       res.json(result)
     })
   } catch (err) {

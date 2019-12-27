@@ -12,11 +12,11 @@ let obj = {
   }),
   send: function(mail, content,callback) {
     mailOptions = {
-      from: '"Hello World~" <847805109@qq.com>',
+      from: '"宠物领养网站" <847805109@qq.com>',
       to: mail,
       subject: content,
       text: content,
-      html: "<h1>" + content + "</h1>"
+      html: "<h1>" + "验证码为:" + content + "</h1>"
     };
     this.transporter.sendMail(mailOptions, (error, info) => {
       if (error) {

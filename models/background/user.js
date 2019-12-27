@@ -26,8 +26,8 @@ const loginUser = async (username) => {
   }
 }
 
-const checkPwd = async (id) => {
-  const sql = `select password from admin where id = ${id}`
+const checkPwd = async (username) => {
+  const sql = `select password from admin where username = '${username}'`
   try {
       const data = await mysql.query(sql)
       return data
@@ -37,8 +37,8 @@ const checkPwd = async (id) => {
 }
 
 const updatePwd = async (payload) => {
-  const {password, id} = payload
-  const sql = `update admin set password='${password}' where id = ${id}`
+  const {password, username} = payload
+  const sql = `update admin set password='${password}' where username = '${username}'`
   try {
       const data = await mysql.query(sql)
       return data

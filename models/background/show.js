@@ -10,7 +10,7 @@ const showCount = async(username, content) => {
 const showSearch = async (payload) => {
   const {page, size, username, content } = payload
   const start = page * size
-  const sql = `select * from petshow where username like '%${username}%' and content like '%${content}%' limit ${start}, ${size}`
+  const sql = `select * from petshow where username like '%${username}%' and content like '%${content}%' order by create_time desc limit ${start}, ${size}`
   try {
       const data = await mysql.query(sql)
       const total = await showCount(username, content)
